@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>To-Do List App</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>To-Do List</h1>
+    <form id="todo-form">
+      <input type="text" id="todo-input" placeholder="Enter a task...">
+      <input type="datetime-local" id="due-date-input" placeholder="Due date and time...">
+      <select id="priority-select">
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+      </select>
+      <button type="submit">Add</button>
+    </form>
+    <div id="filter-options">
+      <label for="category-select">Filter by Category:</label>
+      <select id="category-select">
+        <option value="all">All</option>
+        <option value="work">Work</option>
+        <option value="personal">Personal</option>
+        <option value="shopping">Shopping</option>
+      </select>
+      <label for="priority-filter">Filter by Priority:</label>
+      <select id="priority-filter">
+        <option value="all">All</option>
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+      </select>
+    </div>
+    <ul id="todo-list"></ul>
+  </div>
+
+  <script src="script.js"></script>
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+  <script>
+    function handleClientLoad() {
+      gapi.load('client:auth2', initClient);
+    }
+
+    function initClient() {
+      gapi.client.init({
+        apiKey: 'YOUR_API_KEY',
+        clientId: 'YOUR_CLIENT_ID',
+        discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'],
+        scope: 'https://www.googleapis.com/auth/calendar.events'
+      }).then(function () {
+        console.log('Google Calendar API initialized');
+      }, function (error) {
+        console.log('Error initializing Google Calendar API:', error);
+      });
+    }
+
+    handleClientLoad();
+  </script>
+  <script>
+    // JavaScript code for task completion and recovery
+    document.addEventListener('DOMContentLoaded', function() {
+      const todoList = document.getElementById('todo-list');
+
+      // Function to handle task completion
+      function handleTaskCompletion(event) {
+        const checkbox = event.target;
+        const listItem = checkbox.parentNode;
+        if (checkbox.checked) {
+          listItem.classList.add('completed');
+        } else {
+          listItem.classList.remove('completed');
+        }
+      }
+
+      // Function to handle task recovery
+      function handleTaskRecovery(event) {
+        const recoverButton = event.target;
+        const listItem = recoverButton.parentNode;
+        listItem.classList.remove('completed');
+      }
+
+      // Add event listeners to existing and dynamically added checkboxes and recover buttons
+      todoList.addEventListener('change', function(event) {
+        if (event.target.matches('.task-checkbox')) {
+          handleTaskCompletion(event);
+        }
+      });
+
+      todoList.addEventListener('click', function(event) {
+        if (event.target.matches('.recover-button')) {
+          handleTaskRecovery(event);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
